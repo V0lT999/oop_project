@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QAction, qApp
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize, Qt, QRect
 
+
 class Window(QMainWindow):
 
     def __init__(self):
@@ -24,7 +25,7 @@ class Window(QMainWindow):
 
         newAction = QAction(QIcon('../resources/new_ico.png'), 'New', self)
         newAction.setShortcut('Ctrl+N')
-        # newAction.triggered.connect(qApp.quit)
+        newAction.triggered.connect(self.new_book)
 
         printAction = QAction(QIcon('../resources/print_ico.png'), 'Print', self)
         printAction.setShortcut('Ctrl+P')
@@ -99,9 +100,38 @@ class Window(QMainWindow):
 
         return self.table
 
+    def new_book(self):
+        self.application = Window_new_book()
+        self.application.show()
+
+
+class Window_new_book(QWidget):
+    def __init__(self):
+        super(Window_new_book, self).__init__()
+
+        # self.resize(300, 500)
+        # self.center()
+        # self.setWindowTitle('Library')
+        # self.setWindowIcon(QIcon('../resources/library_ico.png'))
+
+        self.central_widget = QWidget(self)
+        self.setCentralWidget(self.central_widget)
+
+        self.name = QLineEdit(self.central_widget)
+        self.name.setGeometry(QRect(10, 10, 291, 31))
+        self.name.setObjectName("Name")
+        self.lineEdit_2 = QLineEdit(self.central_widget)
+        self.lineEdit_2.setGeometry(QRect(10, 50, 291, 31))
+        self.lineEdit_2.setObjectName("lineEdit_2")
+        self.lineEdit_3 = QLineEdit(self.central_widget)
+        self.lineEdit_3.setGeometry(QRect(10, 90, 291, 31))
+        self.lineEdit_3.setObjectName("lineEdit_3")
+        self.lineEdit_4 = QLineEdit(self.central_widget)
+        self.lineEdit_4.setGeometry(QRect(10, 130, 291, 31))
+        self.lineEdit_4.setObjectName("lineEdit_4")
+
 
 if __name__ == '__main__':
-
     app = QApplication(sys.argv)
     ex = Window()
     sys.exit(app.exec_())
