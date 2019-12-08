@@ -1,7 +1,7 @@
 from tkinter import *
-from tkinter.ttk import Combobox
+from tkinter.ttk import Combobox, Treeview
 from PIL import Image, ImageTk
-
+import xlrd
 
 class Library(Frame):
     def __init__(self, parent):
@@ -42,7 +42,30 @@ class Library(Frame):
 
         toolbar.pack(side=TOP, fill=X)
         toolbar_bot.pack(side=BOTTOM, fill=X)
+
+        self.table_read()
+
         self.pack()
+
+    def table_read(self):
+        table = Treeview(self)
+
+        rb = xlrd.open_workbook('../resources/books.xls', formatting_info=False)
+        sheet = rb.sheet_by_index(0)
+
+        table.grid(columnspan=sheet.ncols)
+
+        table["columns"] = sheet.row_values(0)
+        table["show"] = "headings"
+        for cols in range(sheet.ncols):
+            table.heading(sheet.row_values(0)[cols], text=sheet.row_values(0)[cols])
+
+        index = iid = 0
+        for i in range(1, sheet.nrows):
+            table.insert('', index, iid, values=sheet.row_values(i))
+            index = iid = index + 1
+
+
 
     def exit(self):
         self.quit()
@@ -63,7 +86,7 @@ def main():
     window = Tk()
     window.title("library")
     window.iconbitmap('../resources/library_ico.ico')
-    window.geometry("400x400")
+    window.geometry("800x400")
     app = Library(window)
     window.mainloop()
 
