@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter.ttk import Combobox, Treeview
 from PIL import Image, ImageTk
 import xlrd
+import xml.etree.ElementTree as ET
 
 class Library(Frame):
     def __init__(self, parent):
@@ -22,17 +23,21 @@ class Library(Frame):
         saveButton = Button(toolbar, image=self.Save_img, relief=FLAT, command=self.save_func)
         saveButton.pack(side=LEFT, padx=2, pady=1)
 
+        self.Readers_table_img = ImageTk.PhotoImage(Image.open("../resources/readers_table_ico.ico").resize((40, 40)))
+        readertableButton = Button(toolbar, image=self.Readers_table_img, relief=FLAT, command=self.read_readers)
+        readertableButton.pack(side=LEFT, padx=3, pady=1)
+
         self.Print_img = ImageTk.PhotoImage(Image.open("../resources/print_ico.png").resize((40, 40)))
         printButton = Button(toolbar, image=self.Print_img, relief=FLAT, command=self.print_func)
-        printButton.pack(side=LEFT, padx=3, pady=1)
+        printButton.pack(side=LEFT, padx=4, pady=1)
 
         self.Delete_img = ImageTk.PhotoImage(Image.open("../resources/delete_book_ico.ico").resize((40, 40)))
         deleteButton = Button(toolbar, image=self.Delete_img, relief=FLAT, command=self.delete_reader_func)
-        deleteButton.pack(side=LEFT, padx=4, pady=1)
+        deleteButton.pack(side=LEFT, padx=5, pady=1)
 
         self.Exit_img = ImageTk.PhotoImage(Image.open("../resources/exit_ico.png").resize((40, 40)))
         exitButton = Button(toolbar, image=self.Exit_img, relief=FLAT, command=self.exit)
-        exitButton.pack(side=LEFT, padx=5, pady=1)
+        exitButton.pack(side=LEFT, padx=6, pady=1)
 
         autorCombo = Combobox(toolbar_bot)
         autorCombo['values'] = (1, 2, 3)
@@ -88,6 +93,20 @@ class Library(Frame):
 
     def search_Clicked(self):
         print(self.searchLabel.get())
+
+    def read_readers(self):
+        readers_window = Tk()
+        readers_window.title("Readers")
+        readers_window.iconbitmap("../resources/readers_table_ico.ico")
+        readers_window.geometry("800x400")
+        tree = ET.parse("../resources/readers.xml")
+        root = tree.getroot()
+        for reader in root:
+            print(reader.attrib['name'])
+            print("count of books: ", len(reader))
+            for book in reader:
+                print(book.attrib['code'], book[0].text, book[1].text)
+
 
 def main():
     window = Tk()

@@ -1,0 +1,28 @@
+<readers>
+	<reader name="Торопов Владимир">
+		<book code="9">
+			<title>Три товарища</title>
+			<autor>Ремарк</autor>
+		</book>
+		<book code="10">
+			<title>Робинзон Крузо</title>
+			<autor>Дефо</autor>
+		</book>
+	</reader>
+	<reader name="Десятников Григорий">
+		<book code="2">
+			<title>Шантарм</title>
+			<autor>Робертс</autor>
+		</book>
+		<book code="3">
+			<title>Нож</title>
+			<autor>Несбё Ю</autor>
+		</book>
+	</reader>
+	<reader name="Волкова Анна">
+		<book code="6">
+			<title>Кладбище домашних животных</title>
+			<autor>Кинг</autor>
+		</book>
+	</reader>
+</readers>
