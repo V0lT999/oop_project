@@ -26,9 +26,13 @@ class Library(Frame):
         printButton = Button(toolbar, image=self.Print_img, relief=FLAT, command=self.print_func)
         printButton.pack(side=LEFT, padx=3, pady=1)
 
+        self.Delete_img = ImageTk.PhotoImage(Image.open("../resources/delete_book_ico.ico").resize((40, 40)))
+        deleteButton = Button(toolbar, image=self.Delete_img, relief=FLAT, command=self.delete_reader_func)
+        deleteButton.pack(side=LEFT, padx=4, pady=1)
+
         self.Exit_img = ImageTk.PhotoImage(Image.open("../resources/exit_ico.png").resize((40, 40)))
         exitButton = Button(toolbar, image=self.Exit_img, relief=FLAT, command=self.exit)
-        exitButton.pack(side=LEFT, padx=4, pady=1)
+        exitButton.pack(side=LEFT, padx=5, pady=1)
 
         autorCombo = Combobox(toolbar_bot)
         autorCombo['values'] = (1, 2, 3)
@@ -78,6 +82,9 @@ class Library(Frame):
 
     def save_func(self):
         print("save")
+
+    def delete_reader_func(self):
+        print('delete')
 
     def search_Clicked(self):
         print(self.searchLabel.get())
