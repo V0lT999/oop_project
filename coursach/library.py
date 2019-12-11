@@ -1,8 +1,10 @@
 from tkinter import *
+from tkinter import scrolledtext
 from tkinter.ttk import Combobox, Treeview
 from PIL import Image, ImageTk
 import xlrd
 import xml.etree.ElementTree as ET
+
 
 class Library(Frame):
     def __init__(self, parent):
@@ -32,7 +34,7 @@ class Library(Frame):
         printButton.pack(side=LEFT, padx=4, pady=1)
 
         self.Delete_img = ImageTk.PhotoImage(Image.open("../resources/delete_book_ico.ico").resize((40, 40)))
-        deleteButton = Button(toolbar, image=self.Delete_img, relief=FLAT, command=self.delete_reader_func)
+        deleteButton = Button(toolbar, image=self.Delete_img, relief=FLAT, command=self.delete_book_func)
         deleteButton.pack(side=LEFT, padx=5, pady=1)
 
         self.Exit_img = ImageTk.PhotoImage(Image.open("../resources/exit_ico.png").resize((40, 40)))
@@ -75,7 +77,6 @@ class Library(Frame):
             index = iid = index + 1
 
 
-
     def exit(self):
         self.quit()
 
@@ -88,25 +89,92 @@ class Library(Frame):
     def save_func(self):
         print("save")
 
-    def delete_reader_func(self):
+    def delete_book_func(self):
         print('delete')
 
     def search_Clicked(self):
         print(self.searchLabel.get())
 
     def read_readers(self):
-        readers_window = Tk()
+        readers_window = Toplevel()
         readers_window.title("Readers")
         readers_window.iconbitmap("../resources/readers_table_ico.ico")
         readers_window.geometry("800x400")
+
+        readers_app = Readers(readers_window)
+        readers_window.mainloop()
+
+
+class Readers(Frame):
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+        self.parent = parent
+        self.initUI()
+
+    def initUI(self):
+        toolbar = Frame(self.parent, bd=1, relief=RAISED)
+        toolbar_bot_readers = Frame(self.parent, bd=1, relief=RAISED)
+
+        self.New_img = ImageTk.PhotoImage(Image.open('../resources/new_ico.png').resize((40, 40)))
+        newButton = Button(toolbar, image=self.New_img, relief=FLAT, command=self.new_reader_func)
+        newButton.pack(side=LEFT, padx=1, pady=1)
+
+        self.Print_img = ImageTk.PhotoImage(Image.open("../resources/print_ico.png").resize((40, 40)))
+        printButton = Button(toolbar, image=self.Print_img, relief=FLAT, command=self.print_reader_func)
+        printButton.pack(side=LEFT, padx=2, pady=1)
+
+        self.Delete_img = ImageTk.PhotoImage(Image.open("../resources/delete_reader_ico.ico").resize((40, 40)))
+        deleteButton = Button(toolbar, image=self.Delete_img, relief=FLAT, command=self.delete_reader_func)
+        deleteButton.pack(side=LEFT, padx=3, pady=1)
+
+        toolbar.pack(side=TOP, fill=X)
+
+        self.list_readers()
+
+        self.pack()
+
+    def list_readers(self):
+
         tree = ET.parse("../resources/readers.xml")
         root = tree.getroot()
-        for reader in root:
-            print(reader.attrib['name'])
-            print("count of books: ", len(reader))
-            for book in reader:
-                print(book.attrib['code'], book[0].text, book[1].text)
+        # for reader in root:
+        #     #print(reader.attrib['name'])
+        #     #print("count of books: ", len(reader))
+        #     for book in reader:
+        #         #print(book.attrib['code'], book[0].text, book[1].text)
 
+        readers = Combobox(self, state='readonly')
+        elements = []
+
+        for reader in root:
+            elements.append(reader.attrib['name'])
+
+        readers['values'] = tuple(elements)
+        readers.current(0)
+        readers.grid(column=0, row=0)
+
+        books = scrolledtext.ScrolledText(self, width=40, height=10)
+        books.grid(column=0, row=5)
+
+        text = ""
+        current = root[0]
+        current_name = readers.get()
+        for i in root:
+            if i.attrib['name'] == current_name:
+                current = i
+                break
+        for book in current:
+            text = book.attrib['code'] + ' ' + book[0].text + ' ' + book[1].text + '\n'
+        books.insert(INSERT, text)
+
+    def new_reader_func(self):
+        print("new reader")
+
+    def print_reader_func(self):
+        print('print readers')
+
+    def delete_reader_func(self):
+        print('delete reader')
 
 def main():
     window = Tk()
