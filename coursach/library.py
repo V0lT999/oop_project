@@ -136,7 +136,7 @@ class Readers(Frame):
     def list_readers(self):
 
         tree = ET.parse("../resources/readers.xml")
-        root = tree.getroot()
+        self.root = tree.getroot()
         # for reader in root:
         #     #print(reader.attrib['name'])
         #     #print("count of books: ", len(reader))
@@ -146,7 +146,7 @@ class Readers(Frame):
         readers = Combobox(self, state='readonly')
         elements = []
 
-        for reader in root:
+        for reader in self.root:
             elements.append(reader.attrib['name'])
 
         readers['values'] = tuple(elements)
@@ -157,9 +157,9 @@ class Readers(Frame):
         books.grid(column=0, row=5)
 
         text = ""
-        current = root[0]
+        current = self.root[0]
         current_name = readers.get()
-        for i in root:
+        for i in self.root:
             if i.attrib['name'] == current_name:
                 current = i
                 break
@@ -168,7 +168,25 @@ class Readers(Frame):
         books.insert(INSERT, text)
 
     def new_reader_func(self):
+        def clicked():
+            name = fio_txt.get()
+            reader = ET.SubElement(self.root, 'reader')
+            reader.set('name', name)
+            new_xml = ET.tostring(self.root, 'UTF-8')
+            xml_file = open("../resources/readers.xml", 'wb')
+            xml_file.write(new_xml)
+            self.list_readers()
+
         print("new reader")
+        new_reader_window = Toplevel()
+        new_reader_window.title("New_reader")
+        name_reader_lbl = Label(new_reader_window, text="Введите ФИО читателя")
+        name_reader_lbl.grid(column=0, row=0)
+        fio_txt = Entry(new_reader_window, width=20)
+        fio_txt.grid(column=1, row=0)
+        ok_button = Button(new_reader_window, text='OK', command=clicked)
+        ok_button.grid(column=2, row=0)
+        new_reader_window.mainloop()
 
     def print_reader_func(self):
         print('print readers')
