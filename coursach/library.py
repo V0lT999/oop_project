@@ -1,8 +1,8 @@
 from tkinter import *
-from tkinter import scrolledtext
+from tkinter import scrolledtext, messagebox
 from tkinter.ttk import Combobox, Treeview
 from PIL import Image, ImageTk
-import xlrd
+import xlrd, xlwt
 import xml.etree.ElementTree as ET
 
 
@@ -59,21 +59,21 @@ class Library(Frame):
         self.pack()
 
     def table_read(self):
-        table = Treeview(self)
+        self.table = Treeview(self)
 
         rb = xlrd.open_workbook('../resources/books.xls', formatting_info=False)
         sheet = rb.sheet_by_index(0)
 
-        table.grid(columnspan=sheet.ncols)
+        self.table.grid(columnspan=sheet.ncols)
 
-        table["columns"] = sheet.row_values(0)
-        table["show"] = "headings"
+        self.table["columns"] = sheet.row_values(0)
+        self.table["show"] = "headings"
         for cols in range(sheet.ncols):
-            table.heading(sheet.row_values(0)[cols], text=sheet.row_values(0)[cols])
+            self.table.heading(sheet.row_values(0)[cols], text=sheet.row_values(0)[cols])
 
         index = iid = 0
         for i in range(1, sheet.nrows):
-            table.insert('', index, iid, values=sheet.row_values(i))
+            self.table.insert('', index, iid, values=sheet.row_values(i))
             index = iid = index + 1
 
 
@@ -81,19 +81,60 @@ class Library(Frame):
         self.quit()
 
     def new_func(self):
-        print("new")
+        def add_reader():
+            n = self.table["height"]
+            new_book = []
+            new_book.append(n + 1)
+            new_book.append(name_txt.get())
+            new_book.append(autor_book_field.get())
+            new_book.append('есть')
+            self.table["height"] = n + 1
+            self.table.insert('', n + 1, n + 1, values=new_book)
+            res = messagebox.showinfo('Добавление книги', 'Успешно')
+            new_book_window.destroy()
+
+        new_book_window = Toplevel(self)
+        new_book_window.title("New_book")
+        name_book_lbl = Label(new_book_window, text="Введите название книги")
+        name_book_lbl.grid(column=0, row=0)
+        name_txt = Entry(new_book_window, width=20)
+        name_txt.grid(column=1, row=0)
+        autor_book_lbl = Label(new_book_window, text="Введите автора")
+        autor_book_lbl.grid(column=0, row=1)
+        autor_book_field = Entry(new_book_window, width=20)
+        autor_book_field.grid(column=1, row=1)
+        button = Button(new_book_window, text="OK", command=add_reader)
+        button.grid(column=0, row=2)
+
 
     def print_func(self):
-        print("print")
+        '''print("print")'''
 
     def save_func(self):
-        print("save")
+        rw = xlwt.Workbook('../resources/books_write.xls')
+        sheet = rw.add_sheet('Sheet1', cell_overwrite_ok=True)
+        for i in range(4):
+            sheet.write(0, i, self.table.heading(i)["text"])
+        for i in range(self.table["height"]):
+            for j in range(4):
+                print(self.table.item(i)["values"][j])
+                sheet.write(i + 1, j, self.table.item(i)["values"][j])
+        rw.save('../resources/books_write.xls')
 
     def delete_book_func(self):
-        print('delete')
+        a = self.table.selection()
+        res = messagebox.askquestion('Deleting', 'Вы хотите удалить книгу?')
+        if res:
+            self.table.delete(a)
+            self.table['height'] = self.table['height'] - 1
 
     def search_Clicked(self):
-        print(self.searchLabel.get())
+        for i in range(self.table["height"]):
+            self.table.selection_remove(i)
+        search = self.searchLabel.get()
+        for i in range(self.table["height"]):
+            if search in self.table.item(i)["values"][1]:
+                self.table.selection_add(i)
 
     def read_readers(self):
         readers_window = Toplevel(self)
@@ -151,19 +192,27 @@ class Readers(Frame):
         self.readers.current(0)
         self.readers.grid(column=0, row=0)
 
-        books = scrolledtext.ScrolledText(self, width=40, height=10)
-        books.grid(column=0, row=5)
+        button = Button(self, text="Показать книги читателя", command=self.books_of_reader)
+        button.grid(column=0, row=1)
 
+        self.books = scrolledtext.ScrolledText(self, width=40, height=10)
+        self.books.grid(column=0, row=5)
+
+        self.books_of_reader()
+
+    def books_of_reader(self):
+        self.books.delete(1.0, END)
         text = ""
         current = self.root[0]
         current_name = self.readers.get()
+
         for i in self.root:
             if i.attrib['name'] == current_name:
                 current = i
                 break
         for book in current:
             text = book.attrib['code'] + ' ' + book[0].text + ' ' + book[1].text + '\n'
-        books.insert(INSERT, text)
+        self.books.insert(INSERT, text)
 
 
     def new_reader_func(self):
