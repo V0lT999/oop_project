@@ -4,7 +4,6 @@
     <list default="true" id="491e4ad8-df77-4d58-a025-0e99709f22f1" name="Default Changelist" comment="add library_ico">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/library.py" beforeDir="false" afterPath="$PROJECT_DIR$/library.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../resources/books — копия.xls" beforeDir="false" afterPath="$PROJECT_DIR$/../resources/books — копия.xls" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -94,6 +93,8 @@
       <workItem from="1576104764820" duration="7051000" />
       <workItem from="1576627674463" duration="3119000" />
       <workItem from="1576633576426" duration="5969000" />
+      <workItem from="1576646168444" duration="2599000" />
+      <workItem from="1576649000489" duration="10045000" />
     </task>
     <servers />
   </component>
@@ -114,6 +115,6 @@
     </option>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/coursach$library.coverage" NAME="library Coverage Results" MODIFIED="1576639289976" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/coursach$library.coverage" NAME="library Coverage Results" MODIFIED="1576659205648" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

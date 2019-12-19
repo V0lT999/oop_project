@@ -25,4 +25,4 @@
 			<autor>Кинг</autor>
 		</book>
 	</reader>
-</readers>
+<reader name="Я читатель" /><reader name="1" /><reader name="2" /><reader name="3" /></readers>

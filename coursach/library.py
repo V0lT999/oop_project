@@ -1,12 +1,17 @@
+"""Library project"""
 from tkinter import *
 from tkinter import scrolledtext, messagebox
 from tkinter.ttk import Combobox, Treeview
 from PIL import Image, ImageTk
 import xlrd, xlwt
 import xml.etree.ElementTree as ET
-
+from lxml import html, etree
+import logging
+import unittest
+import threading
 
 class Library(Frame):
+    """Library class"""
     def __init__(self, parent):
         Frame.__init__(self, parent)
         self.parent = parent
@@ -41,10 +46,6 @@ class Library(Frame):
         exitButton = Button(toolbar, image=self.Exit_img, relief=FLAT, command=self.exit)
         exitButton.pack(side=LEFT, padx=6, pady=1)
 
-        autorCombo = Combobox(toolbar_bot)
-        autorCombo['values'] = (1, 2, 3)
-        autorCombo.pack(side=LEFT, padx=1, pady=1)
-
         self.searchLabel = Entry(toolbar_bot, width=20)
         self.searchLabel.pack(side=LEFT, padx=5, pady=1)
 
@@ -54,11 +55,17 @@ class Library(Frame):
         toolbar.pack(side=TOP, fill=X)
         toolbar_bot.pack(side=BOTTOM, fill=X)
 
+        self.books_values = []
         self.table_read()
+
+        autorCombo = Combobox(toolbar_bot)
+        autorCombo['values'] = tuple(self.books_values)
+        autorCombo.pack(side=LEFT, padx=1, pady=1)
 
         self.pack()
 
     def table_read(self):
+        """books info reading function"""
         self.table = Treeview(self)
 
         rb = xlrd.open_workbook('../resources/books.xls', formatting_info=False)
@@ -74,13 +81,16 @@ class Library(Frame):
         index = iid = 0
         for i in range(1, sheet.nrows):
             self.table.insert('', index, iid, values=sheet.row_values(i))
+            self.books_values.append(sheet.row_values(i)[2])
             index = iid = index + 1
 
 
     def exit(self):
+        """exit function"""
         self.quit()
 
     def new_func(self):
+        """Adding of reader function"""
         def add_reader():
             n = self.table["height"]
             new_book = []
@@ -108,9 +118,10 @@ class Library(Frame):
 
 
     def print_func(self):
-        '''print("print")'''
+        """printing function"""
 
     def save_func(self):
+        """saving data function"""
         rw = xlwt.Workbook('../resources/books_write.xls')
         sheet = rw.add_sheet('Sheet1', cell_overwrite_ok=True)
         for i in range(4):
@@ -122,6 +133,7 @@ class Library(Frame):
         rw.save('../resources/books_write.xls')
 
     def delete_book_func(self):
+        """removal book function"""
         a = self.table.selection()
         res = messagebox.askquestion('Deleting', 'Вы хотите удалить книгу?')
         if res:
@@ -129,6 +141,7 @@ class Library(Frame):
             self.table['height'] = self.table['height'] - 1
 
     def search_Clicked(self):
+        """search function"""
         for i in range(self.table["height"]):
             self.table.selection_remove(i)
         search = self.searchLabel.get()
@@ -146,6 +159,7 @@ class Library(Frame):
 
 
 class Readers(Frame):
+    """Readers class"""
     def __init__(self, parent):
         Frame.__init__(self, parent)
         self.parent = parent
@@ -158,6 +172,10 @@ class Readers(Frame):
         self.New_img = ImageTk.PhotoImage(Image.open('../resources/new_ico.png').resize((40, 40)))
         newButton = Button(toolbar, image=self.New_img, relief=FLAT, command=self.new_reader_func)
         newButton.pack(side=LEFT, padx=1, pady=1)
+
+        self.New_book_img = ImageTk.PhotoImage(Image.open('../resources/library_ico.png').resize((40, 40)))
+        newbookButton = Button(toolbar, image=self.New_book_img, relief=FLAT, command=self.add_book_reader)
+        newbookButton.pack(side=LEFT, padx=1, pady=1)
 
         self.Print_img = ImageTk.PhotoImage(Image.open("../resources/print_ico.png").resize((40, 40)))
         printButton = Button(toolbar, image=self.Print_img, relief=FLAT, command=self.print_reader_func)
@@ -173,20 +191,55 @@ class Readers(Frame):
 
         toolbar.pack(side=TOP, fill=X)
 
+        t1 = threading.Event()
+        t2 = threading.Event()
+
+        self.first_thread = threading.Thread(target=self.threads_word, args=(t1, t2))
+        self.second_thread = threading.Thread(target=self.threads_word, args=(t2, t1))
+
+        self.first_thread.start()
+        self.second_thread.start()
+
+        t1.set()
+
+        self.first_thread.join()
+        self.second_thread.join()
+
         self.list_readers()
 
         self.pack()
 
-    def list_readers(self):
+    def threads_word(self, wait_thread, set_thread):
+        wait_thread.wait()
+        wait_thread.clear()
+        txt_file = open('../resources/threads.txt', 'a')
+        txt_file.write("Поток")
+        txt_file.close()
+        set_thread.set()
 
+    def add_book_reader(self):
+        nb = Toplevel(self)
+        books = Combobox(nb, state='readonly')
+        elements = []
+        for i in range(Library.table["height"]):
+            if Library.table.item(i)[3] == "есть":
+                current = Library.table.item(i)
+                elements.append(current[0] + current[1] + current[2] + current[3])
+        books["values"] = tuple(elements)
+
+    def list_readers(self):
+        logging.basicConfig(filename='test_debug.log', level=logging.DEBUG)
+        """reading readers function"""
         tree = ET.parse("../resources/readers.xml")
         self.root = tree.getroot()
-
         self.readers = Combobox(self, state='readonly')
         elements = []
+        logging.debug("Файл открыт, combobox создан")
 
         for reader in self.root:
             elements.append(reader.attrib['name'])
+
+        logging.debug("Прочитаны элементы списка читатели")
 
         self.readers['values'] = tuple(elements)
         self.readers.current(0)
@@ -198,13 +251,18 @@ class Readers(Frame):
         self.books = scrolledtext.ScrolledText(self, width=40, height=10)
         self.books.grid(column=0, row=5)
 
+        logging.debug("Читатели заполнены")
+
         self.books_of_reader()
 
     def books_of_reader(self):
+        logging.basicConfig(filename='test_warning.log', level=logging.WARNING)
         self.books.delete(1.0, END)
         text = ""
         current = self.root[0]
         current_name = self.readers.get()
+
+        logging.warning("начало списка мб пустым")
 
         for i in self.root:
             if i.attrib['name'] == current_name:
@@ -214,8 +272,10 @@ class Readers(Frame):
             text = book.attrib['code'] + ' ' + book[0].text + ' ' + book[1].text + '\n'
         self.books.insert(INSERT, text)
 
+        logging.warning("список может быть пустым")
 
     def new_reader_func(self):
+        """Adding a reader function"""
         def clicked():
             name = fio_txt.get()
             reader = ET.SubElement(self.root, 'reader')
@@ -232,7 +292,6 @@ class Readers(Frame):
             lbl.grid(column=0, row=0)
             button = Button(success_window, text="OK", command=close_reader_window)
             button.grid(column=0, row=3)
-
             self.list_readers()
 
         def close_reader_window():
@@ -247,49 +306,57 @@ class Readers(Frame):
         ok_button = Button(new_reader_window, text='OK', command=clicked)
         ok_button.grid(column=2, row=0)
 
+
     def print_reader_func(self):
         print('print readers')
 
     def delete_reader_func(self):
-        current_name = self.readers.get()
-        current = self.root[0]
-        for i in self.root:
-            if i.attrib['name'] == current_name:
-                current = i
-                break
-        self.root.remove(current)
-
-        new_xml = ET.tostring(self.root, 'UTF-8')
-        xml_file = open("../resources/readers.xml", 'wb')
-        xml_file.write(new_xml)
-        xml_file.close()
-
-        self.list_readers()
-
-    def delete_book_reader_func(self):
-
-        def delete_book():
-            current_book_name = books.get()
-            current_book = current[0]
-            for i in current:
-                if i[0].text == current_book_name:
-                    current_book = i
+        """Removal reader function"""
+        try:
+            current_name = self.readers.get()
+            current = self.root[0]
+            for i in self.root:
+                if i.attrib['name'] == current_name:
+                    current = i
                     break
-            current.remove(current_book)
+            self.root.remove(current)
 
             new_xml = ET.tostring(self.root, 'UTF-8')
             xml_file = open("../resources/readers.xml", 'wb')
             xml_file.write(new_xml)
             xml_file.close()
+        except:
+            mb = messagebox.showerror("ERROR", "ошибка при удалении")
 
-            success_window = Toplevel(books_reader_window)
-            success_window.title("Success")
-            lbl = Label(success_window, text="Книга успешно списана")
-            lbl.grid(column=0, row=0)
-            button = Button(success_window, text="OK", command=close_reader_window)
-            button.grid(column=0, row=3)
+        self.list_readers()
 
-            self.list_readers()
+    def delete_book_reader_func(self):
+        """Removal book of reader function"""
+        try:
+            def delete_book():
+                current_book_name = books.get()
+                current_book = current[0]
+                for i in current:
+                    if i[0].text == current_book_name:
+                        current_book = i
+                        break
+                current.remove(current_book)
+
+                new_xml = ET.tostring(self.root, 'UTF-8')
+                xml_file = open("../resources/readers.xml", 'wb')
+                xml_file.write(new_xml)
+                xml_file.close()
+
+                success_window = Toplevel(books_reader_window)
+                success_window.title("Success")
+                lbl = Label(success_window, text="Книга успешно списана")
+                lbl.grid(column=0, row=0)
+                button = Button(success_window, text="OK", command=close_reader_window)
+                button.grid(column=0, row=3)
+
+                self.list_readers()
+        except:
+            mb = messagebox.showerror("ERROR", "Ошибка при удалении")
 
         def close_reader_window():
             books_reader_window.destroy()
@@ -318,10 +385,8 @@ class Readers(Frame):
         DeleteButton = Button(books_reader_window, text="Списать", command=delete_book)
         DeleteButton.grid(column=0, row=5)
 
-
-
-
 def main():
+    """Main function"""
     window = Tk()
     window.title("library")
     window.iconbitmap('../resources/library_ico.ico')
