@@ -2,6 +2,7 @@
 from tkinter import *
 from tkinter import scrolledtext, messagebox
 from tkinter.ttk import Combobox, Treeview
+from fpdf import FPDF
 from PIL import Image, ImageTk
 import xlrd, xlwt
 import xml.etree.ElementTree as ET
@@ -9,6 +10,7 @@ from lxml import html, etree
 import logging
 import unittest
 import threading
+
 
 class Library(Frame):
     """Library class"""
@@ -121,15 +123,28 @@ class Library(Frame):
 
     def save_func(self):
         """saving data function"""
+        txt = ""
         rw = xlwt.Workbook('../resources/books_write.xls')
         sheet = rw.add_sheet('Sheet1', cell_overwrite_ok=True)
         for i in range(4):
             sheet.write(0, i, self.table.heading(i)["text"])
         for i in range(self.table["height"]):
+            value = ""
             for j in range(4):
-                print(self.table.item(i)["values"][j])
+                #print(self.table.item(i)["values"][j])
+                value = value + self.table.item(i)["values"][j] + ' '
                 sheet.write(i + 1, j, self.table.item(i)["values"][j])
+            txt = txt + value + '\n'
         rw.save('../resources/books_write.xls')
+
+        txt = "some string for pdf"
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font('Arial', size=12)
+        pdf.cell(200, 10, txt=txt)
+        pdf.output('../resources/report.pdf')
+        mb = messagebox.showinfo('Success', 'Успешно сохранено')
+
 
     def delete_book_func(self):
         """removal book function"""
