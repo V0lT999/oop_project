@@ -84,7 +84,6 @@ class Library(Frame):
             self.books_values.append(sheet.row_values(i)[2])
             index = iid = index + 1
 
-
     def exit(self):
         """exit function"""
         self.quit()
@@ -155,14 +154,17 @@ class Library(Frame):
         readers_window.iconbitmap("../resources/readers_table_ico.ico")
         readers_window.geometry("800x400")
 
-        readers_app = Readers(readers_window)
+        readers_app = Readers(readers_window, self.table)
+
+        self.update()
 
 
 class Readers(Frame):
     """Readers class"""
-    def __init__(self, parent):
+    def __init__(self, parent, table):
         Frame.__init__(self, parent)
         self.parent = parent
+        self.table = table
         self.initUI()
 
     def initUI(self):
@@ -218,42 +220,102 @@ class Readers(Frame):
         set_thread.set()
 
     def add_book_reader(self):
+        def write_book_reader():
+            current_name = self.readers.get()
+            current_reader = self.root[0]
+            for i in self.root:
+                if i.attrib['name'] == current_name:
+                    current_reader = i
+                    break
+
+            current_book = books.get()
+            current_book_table = self.table.item(0)
+            for i in range(self.table['height']):
+                if current_book == self.table.item(i)['values'][1]:
+                    self.table.set(i, column=3, value='нет')
+                    current_book_table = self.table.item(i)
+
+            # for i in range(self.table['height']):
+            #     print(self.table.item(i))
+
+            book = ET.SubElement(current_reader, 'book')
+            book.set('code', current_book_table['values'][0])
+            book_title = ET.SubElement(book, 'title')
+            book_title.text = current_book_table['values'][1]
+            book_autor = ET.SubElement(book, 'autor')
+            book_autor.text = current_book_table['values'][2]
+
+            rw = xlwt.Workbook('../resources/books.xls')
+            sheet = rw.add_sheet('Sheet1', cell_overwrite_ok=True)
+            for i in range(4):
+                sheet.write(0, i, self.table.heading(i)["text"])
+            for i in range(self.table["height"]):
+                for j in range(4):
+                    sheet.write(i + 1, j, self.table.item(i)["values"][j])
+            rw.save('../resources/books.xls')
+
+            new_xml = ET.tostring(self.root, 'UTF-8')
+            xml_file = open("../resources/readers.xml", 'wb')
+            xml_file.write(new_xml)
+            xml_file.close()
+
+            success_window = Toplevel(nb)
+            success_window.title("Success")
+            lbl_i = Label(success_window, text="Читатель успешно добавлен")
+            lbl_i.grid(column=0, row=0)
+            button_i = Button(success_window, text="OK", command=close_nb_window)
+            button_i.grid(column=0, row=3)
+            self.list_readers()
+
+        def close_nb_window():
+            nb.destroy()
+
         nb = Toplevel(self)
         books = Combobox(nb, state='readonly')
         elements = []
-        for i in range(Library.table["height"]):
-            if Library.table.item(i)[3] == "есть":
-                current = Library.table.item(i)
-                elements.append(current[0] + current[1] + current[2] + current[3])
+        for i in range(self.table["height"]):
+            if self.table.item(i)['values'][3] == "есть":
+                current = self.table.item(i)['values']
+                elements.append(current[1])
         books["values"] = tuple(elements)
+        books.current(0)
+        books['width'] = 40
+        lbl = Label(nb, text="Выберите книгу")
+        lbl.grid(column=0, row=0)
+        books.grid(column=1, row=0)
+        button = Button(nb, text="Добавить", command=write_book_reader)
+        button.grid(column=1, row=1)
 
     def list_readers(self):
-        logging.basicConfig(filename='test_debug.log', level=logging.DEBUG)
-        """reading readers function"""
-        tree = ET.parse("../resources/readers.xml")
-        self.root = tree.getroot()
-        self.readers = Combobox(self, state='readonly')
-        elements = []
-        logging.debug("Файл открыт, combobox создан")
+        try:
+            logging.basicConfig(filename='test_debug.log', level=logging.DEBUG)
+            """reading readers function"""
+            tree = ET.parse("../resources/readers.xml")
+            self.root = tree.getroot()
+            self.readers = Combobox(self, state='readonly')
+            elements = []
+            logging.debug("Файл открыт, combobox создан")
 
-        for reader in self.root:
-            elements.append(reader.attrib['name'])
+            for reader in self.root:
+                elements.append(reader.attrib['name'])
 
-        logging.debug("Прочитаны элементы списка читатели")
+            logging.debug("Прочитаны элементы списка читатели")
 
-        self.readers['values'] = tuple(elements)
-        self.readers.current(0)
-        self.readers.grid(column=0, row=0)
+            self.readers['values'] = tuple(elements)
+            self.readers.current(0)
+            self.readers.grid(column=0, row=0)
 
-        button = Button(self, text="Показать книги читателя", command=self.books_of_reader)
-        button.grid(column=0, row=1)
+            button = Button(self, text="Показать книги читателя", command=self.books_of_reader)
+            button.grid(column=0, row=1)
 
-        self.books = scrolledtext.ScrolledText(self, width=40, height=10)
-        self.books.grid(column=0, row=5)
+            self.books = scrolledtext.ScrolledText(self, width=40, height=10)
+            self.books.grid(column=0, row=5)
 
-        logging.debug("Читатели заполнены")
+            logging.debug("Читатели заполнены")
 
-        self.books_of_reader()
+            self.books_of_reader()
+        except:
+            mb = messagebox.showerror("ERROR", "ошибка при удалении")
 
     def books_of_reader(self):
         logging.basicConfig(filename='test_warning.log', level=logging.WARNING)
@@ -269,7 +331,7 @@ class Readers(Frame):
                 current = i
                 break
         for book in current:
-            text = book.attrib['code'] + ' ' + book[0].text + ' ' + book[1].text + '\n'
+            text = text + book.attrib['code'] + ' ' + book[0].text + ' ' + book[1].text + '\n'
         self.books.insert(INSERT, text)
 
         logging.warning("список может быть пустым")
@@ -337,10 +399,23 @@ class Readers(Frame):
                 current_book_name = books.get()
                 current_book = current[0]
                 for i in current:
-                    if i[0].text == current_book_name:
+                    if i[0].text in current_book_name:
                         current_book = i
                         break
                 current.remove(current_book)
+
+                for i in range(self.table['height']):
+                    if self.table.item(i)['values'][1] in current_book_name:
+                        self.table.set(i, column=3, value='есть')
+
+                rw = xlwt.Workbook('../resources/books.xls')
+                sheet = rw.add_sheet('Sheet1', cell_overwrite_ok=True)
+                for i in range(4):
+                    sheet.write(0, i, self.table.heading(i)["text"])
+                for i in range(self.table["height"]):
+                    for j in range(4):
+                        sheet.write(i + 1, j, self.table.item(i)["values"][j])
+                rw.save('../resources/books.xls')
 
                 new_xml = ET.tostring(self.root, 'UTF-8')
                 xml_file = open("../resources/readers.xml", 'wb')
@@ -355,35 +430,35 @@ class Readers(Frame):
                 button.grid(column=0, row=3)
 
                 self.list_readers()
+
+            def close_reader_window():
+                books_reader_window.destroy()
+
+            books_reader_window = Toplevel(self)
+            books_reader_window.title('Reader\'s books')
+
+            books = Combobox(books_reader_window, state='readonly')
+            current = self.root[0]
+            current_name = self.readers.get()
+            for i in self.root:
+                if i.attrib['name'] == current_name:
+                    current = i
+                    break
+            elements = []
+            for book in current:
+                elements.append(book.attrib['code'] + ' ' + book[0].text + ' ' + book[1].text + '\n')
+
+            lbl = Label(books_reader_window, text="Выберите книгу для списания")
+            lbl.grid(column=0, row=0)
+
+            books['values'] = tuple(elements)
+            books.current(0)
+            books.grid(column=0, row=2)
+
+            DeleteButton = Button(books_reader_window, text="Списать", command=delete_book)
+            DeleteButton.grid(column=0, row=5)
         except:
             mb = messagebox.showerror("ERROR", "Ошибка при удалении")
-
-        def close_reader_window():
-            books_reader_window.destroy()
-
-        books_reader_window = Toplevel(self)
-        books_reader_window.title('Reader\'s books')
-
-        books = Combobox(books_reader_window, state='readonly')
-        current = self.root[0]
-        current_name = self.readers.get()
-        for i in self.root:
-            if i.attrib['name'] == current_name:
-                current = i
-                break
-        elements = []
-        for book in current:
-            elements.append(book.attrib['code'] + ' ' + book[0].text + ' ' + book[1].text + '\n')
-
-        lbl = Label(books_reader_window, text="Выберите книгу для списания")
-        lbl.grid(column=0, row=0)
-
-        books['values'] = tuple(elements)
-        books.current(0)
-        books.grid(column=0, row=2)
-
-        DeleteButton = Button(books_reader_window, text="Списать", command=delete_book)
-        DeleteButton.grid(column=0, row=5)
 
 def main():
     """Main function"""

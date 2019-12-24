@@ -8,7 +8,7 @@
 			<title>Робинзон Крузо</title>
 			<autor>Дефо</autor>
 		</book>
-	</reader>
+	<book code="8.0"><title>Мастер и Маргарита</title><autor>Булгаков</autor></book></reader>
 	<reader name="Десятников Григорий">
 		<book code="2">
 			<title>Шантарм</title>
@@ -25,4 +25,4 @@
 			<autor>Кинг</autor>
 		</book>
 	</reader>
-<reader name="ghj ghj" /></readers>
+</readers>
