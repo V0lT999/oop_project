@@ -10,6 +10,14 @@ from lxml import html, etree
 import logging
 import unittest
 import threading
+import unittest
+
+
+class Unittestclass(unittest.TestCase):
+    def test_def(self):
+        self.assertEqual(5 + 5, 10)
+        # file_res = open('test_res.txt', 'w')
+        # file_res.write(res)
 
 
 class Library(Frame):
@@ -117,9 +125,9 @@ class Library(Frame):
         button = Button(new_book_window, text="OK", command=add_reader)
         button.grid(column=0, row=2)
 
-
     def print_func(self):
         """printing function"""
+        unittest.main()
 
     def save_func(self):
         """saving data function"""
