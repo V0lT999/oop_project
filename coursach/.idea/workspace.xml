@@ -2,8 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="491e4ad8-df77-4d58-a025-0e99709f22f1" name="Default Changelist" comment="add library_ico">
+      <change beforePath="$PROJECT_DIR$/../1/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../1/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/library.py" beforeDir="false" afterPath="$PROJECT_DIR$/library.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_debug.log" beforeDir="false" afterPath="$PROJECT_DIR$/test_debug.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../resources/report.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../resources/report.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../resources/threads.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../resources/threads.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,7 +32,8 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../os/os/4_2" />
+    <property name="settings.editor.selected.configurable" value="preferences.customizations" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -97,7 +102,11 @@
       <workItem from="1576649000489" duration="10045000" />
       <workItem from="1577021458594" duration="9107000" />
       <workItem from="1577185203206" duration="2154000" />
-      <workItem from="1577189627792" duration="5134000" />
+      <workItem from="1577189627792" duration="5235000" />
+      <workItem from="1577205295341" duration="1260000" />
+      <workItem from="1577222152378" duration="9854000" />
+      <workItem from="1577236233423" duration="1682000" />
+      <workItem from="1577238011298" duration="925000" />
     </task>
     <servers />
   </component>
@@ -118,6 +127,6 @@
     </option>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/coursach$library.coverage" NAME="library Coverage Results" MODIFIED="1577204732717" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/coursach$library.coverage" NAME="library Coverage Results" MODIFIED="1577237541433" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

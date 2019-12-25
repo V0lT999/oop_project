@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fe7b7b7a-21cc-46f8-bd9b-d61a0b631d03" name="Default Changelist" comment="" />
+    <list default="true" id="fe7b7b7a-21cc-46f8-bd9b-d61a0b631d03" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../coursach/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../coursach/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../coursach/library.py" beforeDir="false" afterPath="$PROJECT_DIR$/../coursach/library.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../coursach/test_debug.log" beforeDir="false" afterPath="$PROJECT_DIR$/../coursach/test_debug.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../resources/report.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../resources/report.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../resources/threads.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../resources/threads.txt" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
   <component name="ProjectId" id="1T6gugPxwHVesYqcPtk9RLA0Yqj" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../coursach" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -64,13 +76,25 @@
       <option name="presentableId" value="Default" />
       <updated>1572786482822</updated>
       <workItem from="1572786491711" duration="1191000" />
+      <workItem from="1577236086438" duration="143000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/1$first.coverage" NAME="first Coverage Results" MODIFIED="1572786915005" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/1$first.coverage" NAME="first Coverage Results" MODIFIED="1577236088054" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

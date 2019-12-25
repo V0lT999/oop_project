@@ -11,13 +11,11 @@ import logging
 import unittest
 import threading
 import unittest
-
+import jinja2
 
 class Unittestclass(unittest.TestCase):
     def test_def(self):
         self.assertEqual(5 + 5, 10)
-        # file_res = open('test_res.txt', 'w')
-        # file_res.write(res)
 
 
 class Library(Frame):
@@ -52,9 +50,13 @@ class Library(Frame):
         deleteButton = Button(toolbar, image=self.Delete_img, relief=FLAT, command=self.delete_book_func)
         deleteButton.pack(side=LEFT, padx=5, pady=1)
 
+        self.Info_img = ImageTk.PhotoImage(Image.open("../resources/info.ico").resize((40, 40)))
+        infoButton = Button(toolbar, image=self.Info_img, relief=FLAT, command=self.get_info)
+        infoButton.pack(side=LEFT, padx=6, pady=1)
+
         self.Exit_img = ImageTk.PhotoImage(Image.open("../resources/exit_ico.png").resize((40, 40)))
         exitButton = Button(toolbar, image=self.Exit_img, relief=FLAT, command=self.exit)
-        exitButton.pack(side=LEFT, padx=6, pady=1)
+        exitButton.pack(side=LEFT, padx=7, pady=1)
 
         self.searchLabel = Entry(toolbar_bot, width=20)
         self.searchLabel.pack(side=LEFT, padx=5, pady=1)
@@ -97,6 +99,48 @@ class Library(Frame):
     def exit(self):
         """exit function"""
         self.quit()
+
+    def get_info(self):
+        def close_window():
+            info_window.destroy()
+
+        info_file = open("../resources/report.txt", 'r')
+        txt = info_file.read()
+        count_readers = txt[0]
+        count_new_readers = txt[2]
+        count_books = txt[4]
+        info_file.close()
+
+        info_window = Toplevel(self)
+        info_window.title("Info")
+        count_readers_lbl = Label(info_window, text="Количество читателей: ")
+        count_readers_lbl.grid(column=0, row=0)
+        count_readers_lbl_c = Label(info_window, text=count_readers)
+        count_readers_lbl_c.grid(column=2, row=0)
+        count_new_readers_lbl = Label(info_window, text="Количество новых читателей: ")
+        count_new_readers_lbl.grid(column=0, row=1)
+        count_new_readers_lbl_c = Label(info_window, text=count_new_readers)
+        count_new_readers_lbl_c.grid(column=2, row=1)
+        count_books_lbl = Label(info_window, text="Количество взятых книг: ")
+        count_books_lbl.grid(column=0, row=2)
+        count_books_lbl_c = Label(info_window, text=count_books)
+        count_books_lbl_c.grid(column=2, row=2)
+        button = Button(info_window, text="OK", command=close_window)
+        button.grid(column=0, row=4)
+
+    def change_info(self, argument, count):
+        info_file = open("../resources/report.txt", 'r')
+        txt = info_file.read()
+        info_mas = []
+        info_mas.append(txt[0]) #count_readers
+        info_mas.append(txt[2]) #count_new_readers
+        info_mas.append(txt[4]) #count_new_books
+        info_mas[argument] = int(info_mas[argument]) + count
+        info_file.close()
+        info_file = open("../resources/report.txt", 'w')
+        info_file.write(info_mas[0] + '\n' + info_mas[1] + '\n' + info_mas[2] + '\0')
+        info_file.close()
+
 
     def new_func(self):
         """Adding of reader function"""
@@ -151,16 +195,42 @@ class Library(Frame):
         pdf.set_font('Arial', size=12)
         pdf.cell(200, 10, txt=txt)
         pdf.output('../resources/report.pdf')
+
+        html_template = """
+        <html>
+        <head>
+        <title>Отчет номер: {current_date}</title>
+        </head>
+        <body>
+        <table border="1">
+        <tr>
+        <td>Имя</td>
+        <td>Результат</td>
+        </tr>
+        <tr>
+        <td>{arg_w_name}</td>
+        <td>{arg_w_res}</td>
+        </tr>
+        </table>
+        </body>
+        </html>
+        """
+        html_file = open("../resources/report_html.html", 'w')
+        html_file.write(html_template.format(current_date="2015-03-31", arg_w_name="Vladimir Toropov", arg_w_res="report"))
         mb = messagebox.showinfo('Success', 'Успешно сохранено')
 
 
     def delete_book_func(self):
         """removal book function"""
-        a = self.table.selection()
-        res = messagebox.askquestion('Deleting', 'Вы хотите удалить книгу?')
-        if res:
-            self.table.delete(a)
-            self.table['height'] = self.table['height'] - 1
+        try:
+            a = self.table.selection()
+            res = messagebox.askquestion('Deleting', 'Вы хотите удалить книгу?')
+            if res:
+                self.table.delete(a)
+                self.table['height'] = self.table['height'] - 1
+        except:
+            mb = messagebox.showerror("ERROR", "ошибка при удалении")
+
 
     def search_Clicked(self):
         """search function"""
@@ -234,6 +304,19 @@ class Readers(Frame):
 
         self.pack()
 
+    def change_info(self, argument, count):
+        info_file = open("../resources/report.txt", 'r')
+        txt = info_file.read()
+        info_mas = []
+        info_mas.append(txt[0]) #count_readers
+        info_mas.append(txt[2]) #count_new_readers
+        info_mas.append(txt[4]) #count_new_books
+        info_mas[argument] = str(int(info_mas[argument]) + count)
+        info_file.close()
+        info_file = open("../resources/report.txt", 'w')
+        info_file.write(info_mas[0] + '\n' + info_mas[1] + '\n' + info_mas[2] + '\0')
+        info_file.close()
+
     def threads_word(self, wait_thread, set_thread):
         wait_thread.wait()
         wait_thread.clear()
@@ -284,10 +367,12 @@ class Readers(Frame):
 
             success_window = Toplevel(nb)
             success_window.title("Success")
-            lbl_i = Label(success_window, text="Читатель успешно добавлен")
+            lbl_i = Label(success_window, text="Книга успешно добавлена")
             lbl_i.grid(column=0, row=0)
             button_i = Button(success_window, text="OK", command=close_nb_window)
             button_i.grid(column=0, row=3)
+
+            self.change_info(2, 1)
             self.list_readers()
 
         def close_nb_window():
@@ -341,7 +426,7 @@ class Readers(Frame):
             mb = messagebox.showerror("ERROR", "ошибка при удалении")
 
     def books_of_reader(self):
-        logging.basicConfig(filename='test_warning.log', level=logging.WARNING)
+        logging.basicConfig(filename='../resources/test_warning.log', level=logging.WARNING)
         self.books.delete(1.0, END)
         text = ""
         current = self.root[0]
@@ -377,6 +462,9 @@ class Readers(Frame):
             lbl.grid(column=0, row=0)
             button = Button(success_window, text="OK", command=close_reader_window)
             button.grid(column=0, row=3)
+
+            self.change_info(0, 1)
+            self.change_info(1, 1)
             self.list_readers()
 
         def close_reader_window():
@@ -405,7 +493,7 @@ class Readers(Frame):
                     current = i
                     break
             self.root.remove(current)
-
+            self.change_info(0, -1)
             new_xml = ET.tostring(self.root, 'UTF-8')
             xml_file = open("../resources/readers.xml", 'wb')
             xml_file.write(new_xml)
